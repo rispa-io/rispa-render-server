@@ -14,6 +14,7 @@ import {
   createWhen,
 } from '@rispa/redux'
 import getRoutes from '@rispa/routes'
+import config from '@rispa/config'
 import { CookiesProvider } from '@rispa/vendor/cookies'
 import { flushWebpackRequireWeakIds } from '@rispa/vendor/loadable'
 import Html from './Html'
@@ -81,7 +82,7 @@ const createRender = (assets, cacheConfig) => (req, res) => {
       ? renderAndProfile(App)
       : ReactDOM.renderToString(App)
 
-    const rootDir = path.resolve(process.cwd())
+    const rootDir = config.outputPath
     const paths = flushWebpackRequireWeakIds().map(
       p => path.relative(rootDir, p).replace(/\\/g, '/')
     )
