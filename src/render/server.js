@@ -82,7 +82,7 @@ const createRender = (assets, cacheConfig) => (req, res) => {
       ? renderAndProfile(App)
       : ReactDOM.renderToString(App)
 
-    const rootDir = config.outputPath
+    const rootDir = path.resolve(process.cwd())
     const paths = flushWebpackRequireWeakIds().map(
       p => path.relative(rootDir, p).replace(/\\/g, '/')
     )
@@ -91,10 +91,9 @@ const createRender = (assets, cacheConfig) => (req, res) => {
       before: ['bootstrap'],
       after: ['main'],
     })
-
     assets.javascript = flushedAssets.scripts.reduce((newScripts, script) => {
       const key = script.replace(/\.js$/, '')
-      newScripts[key] = script
+      newScripts[key] = `${config.publicPath.replace(/\/$/, '')}/${script}`
       return newScripts
     }, {})
 
