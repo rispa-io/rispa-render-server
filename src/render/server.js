@@ -88,7 +88,7 @@ const createRender = (assets, cacheConfig) => (req, res) => {
     )
     const flushedAssets = flushChunks(paths, stats, {
       rootDir,
-      before: ['bootstrap'],
+      before: ['bootstrap', 'vendor'],
       after: ['main'],
     })
     assets.javascript = flushedAssets.scripts.reduce((newScripts, script) => {
