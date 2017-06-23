@@ -53,9 +53,11 @@ class Html extends PureComponent {
   render() {
     const { assets, content, initialState } = this.props
 
-    const bootstrapAsset = assets.javascript.bootstrap
+    const bootstrapAsset = Object.values(assets.javascript).filter(
+      chunk => /bootstrap/.test(chunk)
+    )
     const chunkAssets = Object.values(assets.javascript).filter(
-      chunk => !/bootstrap.js/.test(chunk)
+      chunk => !/bootstrap/.test(chunk)
     )
 
     return (
