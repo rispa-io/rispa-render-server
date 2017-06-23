@@ -6,9 +6,10 @@ const loadChunksOnClient = () => {
   const chunks = window.RISPA_CHUNKS
   let loadedChunksCount = 0
 
-  const loadScript = (chunk, handler) => {
+  const loadScript = (src, handler) => {
     const script = document.createElement('script')
-    script.src = chunk
+    script.src = src
+    script.async = true
     script.onload = handler
     document.body.appendChild(script)
   }
@@ -20,7 +21,7 @@ const loadChunksOnClient = () => {
     }
   }
 
-  const loadChunk = (chunk) => loadScript(chunk, chunkLoadedHandler)
+  const loadChunk = chunk => loadScript(chunk, chunkLoadedHandler)
 
   const vendorLoadedHandler = () => {
     if (chunks.length) {
