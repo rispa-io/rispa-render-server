@@ -15,8 +15,8 @@ import {
 } from '@rispa/redux'
 import getRoutes from '@rispa/routes'
 import config from '@rispa/config'
-import { CookiesProvider } from '@rispa/vendor/cookies'
-import { flushWebpackRequireWeakIds } from '@rispa/vendor/loadable'
+import { CookiesProvider } from 'react-cookie'
+import { flushWebpackRequireWeakIds } from 'react-loadable'
 import Html from './Html'
 
 const STATS_PATH = path.resolve(__dirname, '../../../build/stats.json')
