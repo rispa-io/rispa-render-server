@@ -61,13 +61,18 @@ class Html extends PureComponent {
   render() {
     const { assets, content, initialState } = this.props
 
-    const bootstrapScript = assets.javascript.bootstrap
-    const vendorScript = Object.values(assets.javascript).filter(
-      chunk => /vendor/.test(chunk)
-    )
-    const chunks = Object.values(assets.javascript).filter(
-      chunk => !/bootstrap|vendor/.test(chunk)
-    )
+    let bootstrapScript
+    let vendorScript
+    const chunks = []
+    Object.values(assets.javascript).forEach(script => {
+      if (/bootstrap/.test(script)) {
+        bootstrapScript = script
+      } else if (/vendor/.test(script)) {
+        vendorScript = script
+      } else {
+        chunks.push(script)
+      }
+    })
 
     return (
       <html lang='ru-RU'>
