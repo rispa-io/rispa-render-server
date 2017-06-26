@@ -7,6 +7,8 @@ import cookiesMiddleware from 'universal-cookie-express'
 import serverConfiguration from './configuration/server'
 import settings from '../universal-webpack-settings'
 
+const renderSide = process.env.DISABLE_SSR ? 'client' : 'server'
+
 const log = createDebug('rispa:info:render-server')
 const logError = createDebug('rispa:error:render-server')
 const compilerWatchConfig = {
@@ -63,17 +65,25 @@ const renderMiddleware = (app, registry) => {
     })
   }
 
-  app.use(cookiesMiddleware())
-
-  app.get('*', (req, res) => {
+  const doRender = (side, req, res) => {
     if (render) {
-      render(req, res)
+      render[side](req, res)
     } else {
       asyncRender.then(rndr => {
         render = rndr
-        render(req, res)
+        render[side](req, res)
       })
     }
+  }
+
+  app.use(cookiesMiddleware())
+
+  app.get('/shell', (req, res) => {
+    doRender('client', req, res)
+  })
+
+  app.get('*', (req, res) => {
+    doRender(renderSide, req, res)
   })
 }
 
