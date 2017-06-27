@@ -197,6 +197,10 @@ babel-code-frame@^6.11.0:
     esutils "^2.0.2"
     js-tokens "^3.0.0"
 
+babel-plugin-syntax-dynamic-import@^6.18.0:
+  version "6.18.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-syntax-dynamic-import/-/babel-plugin-syntax-dynamic-import-6.18.0.tgz#8d6a26229c83745a9982a441051572caa179b1da"
+
 babel-runtime@^6.23.0:
   version "6.23.0"
   resolved "https://registry.yarnpkg.com/babel-runtime/-/babel-runtime-6.23.0.tgz#0a9489f144de70efb3ce4300accdb329e2fc543b"
@@ -2192,7 +2196,7 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.8:
+prop-types@^15.0.0, prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.8:
   version "15.5.10"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.5.10.tgz#2797dfc3126182e3a95e3dfbb2e893ddd7456154"
   dependencies:
@@ -2275,6 +2279,15 @@ rc@^1.1.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
+react-cookie@^2.0.7:
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/react-cookie/-/react-cookie-2.0.7.tgz#edce07405fafac55f78ee51b7d8c53925786e0a6"
+  dependencies:
+    hoist-non-react-statics "^1.2.0"
+    prop-types "^15.0.0"
+    react "^15.0.0"
+    universal-cookie "^2.0.1"
+
 react-dom@15.4.2:
   version "15.4.2"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-15.4.2.tgz#015363f05b0a1fd52ae9efdd3a0060d90695208f"
@@ -2282,6 +2295,12 @@ react-dom@15.4.2:
     fbjs "^0.8.1"
     loose-envify "^1.1.0"
     object-assign "^4.1.0"
+
+react-loadable@^3.3.1:
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/react-loadable/-/react-loadable-3.3.1.tgz#91310f1c2adcc73ce944380ee9529f5d33e100d3"
+  dependencies:
+    babel-plugin-syntax-dynamic-import "^6.18.0"
 
 react-redux@^5.0.4:
   version "5.0.5"
@@ -2311,7 +2330,7 @@ react-tree-walker@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/react-tree-walker/-/react-tree-walker-2.1.1.tgz#80ab80a0caa78f029fea39f42306b13b5d51bb8d"
 
-react@15.4.2:
+react@15.4.2, react@^15.0.0:
   version "15.4.2"
   resolved "https://registry.yarnpkg.com/react/-/react-15.4.2.tgz#41f7991b26185392ba9bae96c8889e7e018397ef"
   dependencies:
@@ -2798,7 +2817,7 @@ universal-cookie-express@^2.0.5:
   dependencies:
     universal-cookie "^2.0.0"
 
-universal-cookie@^2.0.0:
+universal-cookie@^2.0.0, universal-cookie@^2.0.1:
   version "2.0.7"
   resolved "https://registry.yarnpkg.com/universal-cookie/-/universal-cookie-2.0.7.tgz#3f42c25574196aba1ca5bbf754b2b6ba28329828"
   dependencies:
