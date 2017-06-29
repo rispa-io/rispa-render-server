@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "description": "rispa server rendering plugin",
   "dependencies": {
-    "@rispa/config": "^0.1.0",
-    "@rispa/core": "^0.1.0",
-    "@rispa/redux": "^0.1.0",
-    "@rispa/routes": "^0.1.0",
-    "@rispa/server": "^0.1.0",
+    "@rispa/config": "^1.0.0",
+    "@rispa/core": "^1.0.0",
+    "@rispa/redux": "^1.0.0",
+    "@rispa/routes": "^1.0.0",
+    "@rispa/server": "^1.0.0",
     "react-cookie": "^2.0.7",
     "react-loadable": "^3.3.1",
     "@webpack-blocks/webpack2": "^0.4.0",
@@ -32,7 +32,7 @@
     "write-file-webpack-plugin": "^4.0.2"
   },
   "devDependencies": {
-    "@rispa/eslint-config": "^1.0.0"
+    "@rispa/eslint-config": "^1.1.0"
   },
   "scripts": {
     "lint": "rispa-eslint",
