@@ -19,8 +19,8 @@ import { CookiesProvider } from 'react-cookie'
 import { flushWebpackRequireWeakIds } from 'react-loadable'
 import Html from './Html'
 
-const STATS_PATH = path.resolve(__dirname, '../../../build/stats.json')
-const SRR_PROFILE_PATH = path.resolve(__dirname, './ssr-profile.json')
+const STATS_PATH = path.resolve(config.outputPath, './stats.json')
+const SRR_PROFILE_PATH = path.resolve(config.outputPath, './ssr-profile.json')
 let stats
 
 const renderAndProfile = App => {
@@ -72,7 +72,7 @@ const createRender = (assets, cacheConfig) => (req, res) => {
   reactTreeWalker(App, () => true)
 
   const { router } = store.getState()
-  if (router.location.pathname !== location) {
+  if (router.location && router.location.pathname !== location) {
     res.redirect(router.location.pathname, '302')
     return
   }

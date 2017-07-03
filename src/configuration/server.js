@@ -29,4 +29,7 @@ const externals = (context, request, callback) => {
 export default (config, settings) => ({
   ...serverConfiguration(config, settings),
   externals,
+  node: {
+    __dirname: true,
+  },
 })
