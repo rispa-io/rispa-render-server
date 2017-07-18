@@ -2,7 +2,6 @@ import React, { PureComponent } from 'react'
 import { objectOf, object, string } from 'prop-types'
 
 const loadChunksOnClient = () => {
-  const vendor = window.RISPA_VENDOR
   const chunks = window.RISPA_CHUNKS
   let loadedChunksCount = 0
 
@@ -17,21 +16,18 @@ const loadChunksOnClient = () => {
   const chunkLoadedHandler = () => {
     loadedChunksCount += 1
     if (loadedChunksCount === chunks.length) {
-      window.startApp()
+      // Schedule application start for next tick for break long frames
+      setTimeout(window.startApp, 0)
     }
   }
 
   const loadChunk = chunk => loadScript(chunk, chunkLoadedHandler)
 
-  const vendorLoadedHandler = () => {
-    if (chunks.length) {
-      chunks.forEach(loadChunk)
-    } else {
-      window.startApp()
-    }
+  if (chunks.length) {
+    chunks.forEach(loadChunk)
+  } else {
+    setTimeout(window.startApp, 0)
   }
-
-  loadScript(vendor, vendorLoadedHandler)
 }
 
 class InitialState extends PureComponent {
@@ -40,14 +36,18 @@ class InitialState extends PureComponent {
   }
 
   render() {
-    return (
+    return this.props.state ? (
       <script
         dangerouslySetInnerHTML={{
-          __html: `window.RISPA_INITIAL_STATE=${this.props.state};`,
+          __html: `
+            // <![CDATA[
+            window.RISPA_INITIAL_STATE=${this.props.state};
+            // ]]>
+          `,
         }}
         charSet='UTF-8'
       />
-    )
+    ) : null
   }
 }
 
@@ -62,13 +62,10 @@ class Html extends PureComponent {
     const { assets, content, initialState } = this.props
 
     let bootstrapScript
-    let vendorScript
     const chunks = []
     Object.values(assets.javascript).forEach(script => {
       if (/bootstrap/.test(script)) {
         bootstrapScript = script
-      } else if (/vendor/.test(script)) {
-        vendorScript = script
       } else {
         chunks.push(script)
       }
@@ -92,18 +89,19 @@ class Html extends PureComponent {
         </head>
         <body>
           <div id='root' dangerouslySetInnerHTML={{ __html: content || '' }} />
-          {initialState && <InitialState state={initialState} />}
           <script src={bootstrapScript} charSet='UTF-8' />
           <script
             dangerouslySetInnerHTML={{
               __html: `
-                window.RISPA_VENDOR=${JSON.stringify(vendorScript)};
+                // <![CDATA[
                 window.RISPA_CHUNKS=${JSON.stringify(chunks)};
                 (${loadChunksOnClient.toString()}());
+                // ]]>
               `,
             }}
             charSet='UTF-8'
           />
+          <InitialState state={initialState} />
         </body>
       </html>
     )
