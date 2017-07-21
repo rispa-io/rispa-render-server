@@ -32,7 +32,7 @@
     "write-file-webpack-plugin": "^4.0.2"
   },
   "devDependencies": {
-    "@rispa/eslint-config": "2.0.1"
+    "@rispa/eslint-config": ">=3.0.0"
   },
   "scripts": {
     "lint": "rispa-eslint .",
