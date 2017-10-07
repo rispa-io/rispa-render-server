@@ -1,5 +1,5 @@
-import createRenderServer from './render/server'
-import createRenderClient from './render/client'
+import createRenderServer from './server'
+import createRenderClient from './client'
 
 export default parameters => {
   const chunks = parameters.chunks()

@@ -1,8 +1,8 @@
-import WriteFilePlugin from 'write-file-webpack-plugin'
-import StatsPlugin from 'stats-webpack-plugin'
-import { createConfig, env } from '@webpack-blocks/webpack2'
+const WriteFilePlugin = require('write-file-webpack-plugin')
+const StatsPlugin = require('stats-webpack-plugin')
+const { group, env } = require('@webpack-blocks/webpack2')
 
-export default () => createConfig([
+module.exports = group([
   () => ({
     plugins: [
       new StatsPlugin('stats.json', {

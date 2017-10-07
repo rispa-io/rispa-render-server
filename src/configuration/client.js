@@ -1,5 +1,5 @@
-import ExtractTextPlugin from 'extract-text-webpack-plugin'
-import { clientConfiguration } from 'universal-webpack'
+const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const { clientConfiguration } = require('universal-webpack')
 
 const IS_PROD = process.env.NODE_ENV === 'production'
 
@@ -40,7 +40,7 @@ const addExtractPlugin = config => {
       use: afterStyleLoader,
     })
 
-    const newRule = { ...rule }
+    const newRule = Object.assign({}, rule)
     delete newRule.loaders
     newRule.use = [
       ...beforeStyleLoader,
@@ -51,18 +51,15 @@ const addExtractPlugin = config => {
     return newRule
   })
 
-  return {
-    ...config,
+  return Object.assign(config, {
     plugins: [
       ...config.plugins,
       extractPlugin,
     ],
-    module: {
-      ...config.module,
+    module: Object.assign(config.module, {
       rules: newRules,
-    },
-  }
+    }),
+  })
 }
 
-export default (config, settings, options) =>
-  clientConfiguration(addExtractPlugin(config), settings, options)
+module.exports = (config, settings) => clientConfiguration(addExtractPlugin(config), settings)
