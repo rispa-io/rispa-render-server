@@ -32,7 +32,7 @@ const loadChunksOnClient = () => {
 
 class InitialState extends PureComponent {
   static propTypes = {
-    state: string.isRequired,
+    state: string,
   }
 
   render() {
