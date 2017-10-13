@@ -14,16 +14,13 @@ import {
   replace,
 } from '@rispa/redux'
 import getRoutes from '@rispa/routes'
-import config from '@rispa/config'
 import { CookiesProvider } from 'react-cookie'
 import { flushWebpackRequireWeakIds } from 'react-loadable'
 import Html from './Html'
 
-const STATS_PATH = path.resolve(config.outputPath, './stats.json')
-const SRR_PROFILE_PATH = path.resolve(config.outputPath, './ssr-profile.json')
 let stats
 
-const renderAndProfile = App => {
+const renderAndProfile = (App, ssrProfilePath) => {
   for (let i = 0; i < 10; i += 1) {
     ReactDOM.renderToString(App)
   }
@@ -34,16 +31,19 @@ const renderAndProfile = App => {
   SSRCaching.enableProfiling(false)
 
   fs.writeFileSync(
-    SRR_PROFILE_PATH,
-    JSON.stringify(SSRCaching.profileData, null, 2)
+    ssrProfilePath,
+    JSON.stringify(SSRCaching.profileData, null, 2),
   )
 
   return content
 }
 
-const createRender = (assets, cacheConfig) => (req, res) => {
+const createRender = (assets, cacheConfig) => (req, res, config) => {
+  const statsPath = path.resolve(config.outputPath, './stats.json')
+  const ssrProfilePath = path.resolve(config.outputPath, './ssr-profile.json')
+
   if (!stats) {
-    stats = JSON.parse(String(fs.readFileSync(STATS_PATH)))
+    stats = JSON.parse(String(fs.readFileSync(statsPath)))
   }
 
   if (process.env.NODE_ENV === 'production') {
@@ -80,12 +80,12 @@ const createRender = (assets, cacheConfig) => (req, res) => {
       }
 
       const content = process.env.PROFILE_SSR
-        ? renderAndProfile(App)
+        ? renderAndProfile(App, ssrProfilePath)
         : ReactDOM.renderToString(App)
 
       const rootDir = path.resolve(process.cwd())
       const paths = flushWebpackRequireWeakIds().map(
-        p => path.relative(rootDir, p).replace(/\\/g, '/')
+        p => path.relative(rootDir, p).replace(/\\/g, '/'),
       )
       const flushedAssets = flushChunks(paths, stats, {
         rootDir,
@@ -98,13 +98,13 @@ const createRender = (assets, cacheConfig) => (req, res) => {
 
       const html =
         `<!doctype html>\n${
-        ReactDOM.renderToStaticMarkup(
-          <Html
-            assets={assets}
-            content={content}
-            initialState={JSON.stringify(store.getState())}
-          />
-        )}`
+          ReactDOM.renderToStaticMarkup(
+            <Html
+              assets={assets}
+              content={content}
+              initialState={JSON.stringify(store.getState())}
+            />,
+          )}`
 
       res.send(html)
     })

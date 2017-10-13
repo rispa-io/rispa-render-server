@@ -1,6 +1,7 @@
 const path = require('path')
 const webpack = require('webpack')
 const createDebug = require('debug')
+const ConfigPluginApi = require('@rispa/config').default
 const { PluginInstance } = require('@rispa/core')
 const ServerPluginApi = require('@rispa/server')
 const WebpackPluginApi = require('@rispa/webpack')
@@ -37,9 +38,10 @@ const logBuildResult = (err, stats) => {
 }
 
 class RenderServerPlugin extends PluginInstance {
-  constructor(context, config) {
-    super(context, config)
+  constructor(context) {
+    super(context)
 
+    this.config = context.get(ConfigPluginApi.pluginName).getConfig()
     this.server = context.get(ServerPluginApi.pluginName)
     this.webpack = context.get(WebpackPluginApi.pluginName)
     this.babel = context.get(BabelPluginApi.pluginName)
@@ -94,11 +96,11 @@ class RenderServerPlugin extends PluginInstance {
 
     return (side, req, res) => {
       if (render) {
-        render[side](req, res)
+        render[side](req, res, this.config)
       } else {
         asyncRender.then(newRender => {
           render = newRender
-          render[side](req, res)
+          render[side](req, res, this.config)
         })
       }
     }
