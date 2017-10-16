@@ -1,4 +1,4 @@
-export default () => ({
+module.exports = () => ({
   entry: {
     vendor: [
       require.resolve('react-cookie'),

@@ -32,7 +32,7 @@ const loadChunksOnClient = () => {
 
 class InitialState extends PureComponent {
   static propTypes = {
-    state: string.isRequired,
+    state: string,
   }
 
   render() {
@@ -61,7 +61,7 @@ class Html extends PureComponent {
   render() {
     const { assets, content, initialState } = this.props
 
-    let bootstrapScript
+    let bootstrapScript = null
     const chunks = []
     Object.values(assets.javascript).forEach(script => {
       if (/bootstrap/.test(script)) {

@@ -1,5 +1,5 @@
-import relative from 'require-relative'
-import { serverConfiguration } from 'universal-webpack'
+const relative = require('require-relative')
+const { serverConfiguration } = require('universal-webpack')
 
 const resolveModule = (context, request) => {
   let requestResolved
@@ -26,10 +26,10 @@ const externals = (context, request, callback) => {
   return callback()
 }
 
-export default (config, settings) => ({
-  ...serverConfiguration(config, settings),
-  externals,
-  node: {
-    __dirname: true,
-  },
-})
+module.exports = (config, settings) =>
+  Object.assign(serverConfiguration(config, settings), {
+    externals,
+    node: {
+      __dirname: true,
+    },
+  })
