@@ -63,6 +63,10 @@ class RenderServerPlugin extends PluginInstance {
     this.webpack.addClientMiddleware(webpackConfig => clientConfiguration(webpackConfig, universalSettings))
   }
 
+  setCache(cache) {
+    this.cache = cache
+  }
+
   createRenderServer(webpackConfig) {
     prepareConfig(settings, webpackConfig)
 
