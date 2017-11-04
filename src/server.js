@@ -55,7 +55,7 @@ const createRender = (assets, cacheConfig) => (req, res, config) => {
   const cookies = req.universalCookies
   const history = createHistory()
   const store = configureStore(history)
-  const when = createWhen(store)
+  const when = createWhen(store, true)
   const routes = getRoutes({ store, when, cookies })
 
   store.dispatch(replace(location))
