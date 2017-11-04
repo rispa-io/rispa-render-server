@@ -11,9 +11,9 @@ const {
   prepare: prepareConfig
 } = require('universal-webpack')
 const cookiesMiddleware = require('universal-cookie-express')
-const serverConfiguration = require('./configuration/server')
+const serverConfiguration = require('./middleware/server')
 const settings = require('./configs/universal-webpack-settings')
-const clientConfiguration = require('./configuration/client')
+const clientConfiguration = require('./middleware/client')
 const universalSettings = require('./configs/universal-webpack-settings')
 
 const babelConfig = require('./configs/babel-options')

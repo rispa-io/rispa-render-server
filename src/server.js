@@ -12,8 +12,8 @@ import {
   configureStore,
   createWhen,
   replace,
-} from '@rispa/redux'
-import getRoutes from '@rispa/routes'
+} from '../../rispa-redux/src/index'
+import getRoutes from '../../rispa-routes/index'
 import { CookiesProvider } from 'react-cookie'
 import { flushWebpackRequireWeakIds } from 'react-loadable'
 import Html from './Html'

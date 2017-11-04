@@ -3,8 +3,8 @@
   "rispa:name": "react-server",
   "version": "4.1.1",
   "description": "Rispa Server rendering plugin",
-  "main": "./src/RenderServerPluginApi.js",
-  "rispa:activator": "./src/activator.js",
+  "main": "./activator/RenderServerPluginApi.js",
+  "rispa:activator": "./activator/index.js",
   "dependencies": {
     "@rispa/config": "4.1.x",
     "@rispa/core": "4.1.x",
@@ -37,9 +37,11 @@
     "write-file-webpack-plugin": "^4.0.2"
   },
   "devDependencies": {
-    "@rispa/eslint-config": ">=3.0.0"
+    "@rispa/eslint-config": ">=3.0.0",
+    "babel-cli": "^6.26.0"
   },
   "scripts": {
+    "compile": "babel src --out-dir lib --ignore spec.js,test.js",
     "lint": "rispa-eslint .",
     "lint:fix": "rispa-eslint . --fix"
   }
