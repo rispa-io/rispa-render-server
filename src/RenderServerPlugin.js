@@ -5,8 +5,11 @@ const ConfigPluginApi = require('@rispa/config').default
 const { PluginInstance } = require('@rispa/core')
 const ServerPluginApi = require('@rispa/server')
 const WebpackPluginApi = require('@rispa/webpack')
-const { default: BabelPluginApi } = require('@rispa/babel')
-const { server: startCompileRenderServer, prepare: prepareConfig } = require('universal-webpack')
+const BabelPluginApi = require('@rispa/babel').default
+const {
+  server: startCompileRenderServer,
+  prepare: prepareConfig
+} = require('universal-webpack')
 const cookiesMiddleware = require('universal-cookie-express')
 const serverConfiguration = require('./configuration/server')
 const settings = require('./configs/universal-webpack-settings')
