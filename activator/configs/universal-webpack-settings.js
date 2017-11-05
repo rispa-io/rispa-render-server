@@ -1,6 +1,6 @@
 module.exports = {
   server: {
-    input: './src/render/entry.js',
+    input: './lib/entry.js',
     output: './build/server.js',
   },
 }
