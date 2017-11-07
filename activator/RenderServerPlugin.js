@@ -120,9 +120,7 @@ class RenderServerPlugin extends PluginInstance {
   }
 
   render(app) {
-    const config = Object.assign(this.webpack.getCommonConfig(), {
-      context: path.resolve(this.config.outputPath, '..'),
-    })
+    const config = this.webpack.getCommonConfig()
 
     const doRender = this.createRenderServer(config)
 
