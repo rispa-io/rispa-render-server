@@ -15,10 +15,11 @@ before_install:
 install:
   - yarn global add @rispa/cli@latest
   - yarn global add @rispa/test-utils@latest
+  - cd ../rispa-project && yarn upgrade && yarn install
 
 script:
-  - ris-test-utils init
-  - ris-test-utils run @rispa/render-server lint
+#  - ris-test-utils init
+#  - ris-test-utils run @rispa/render-server lint
 
 notifications:
   slack:
