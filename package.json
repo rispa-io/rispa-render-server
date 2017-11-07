@@ -1,7 +1,7 @@
 {
   "name": "@rispa/render-server",
   "rispa:name": "react-server",
-  "version": "4.1.6",
+  "version": "4.1.7",
   "description": "Rispa Server rendering plugin",
   "main": "./activator/RenderServerPluginApi.js",
   "rispa:activator": "./activator/index.js",
