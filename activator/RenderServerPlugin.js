@@ -12,9 +12,7 @@ const {
 } = require('universal-webpack')
 const cookiesMiddleware = require('universal-cookie-express')
 const serverConfiguration = require('./middleware/server')
-const settings = require('./configs/universal-webpack-settings')
 const clientConfiguration = require('./middleware/client')
-const universalSettings = require('./configs/universal-webpack-settings')
 
 const babelConfig = require('./configs/babel-options')
 const clientWebpackConfig = require('./configs/client.wpc')
@@ -52,6 +50,13 @@ class RenderServerPlugin extends PluginInstance {
     this.cache = {}
     this.side = process.env.DISABLE_SSR ? CLIENT_SIDE : SERVER_SIDE
 
+    this.universalSettings = {
+      server: {
+        input: path.resolve(__dirname, '../lib/entry.js'),
+        output: path.resolve(this.config.outputPath, './server/server.js'),
+      },
+    }
+
     this.render = this.render.bind(this)
   }
 
@@ -63,7 +68,7 @@ class RenderServerPlugin extends PluginInstance {
     this.webpack.addClientConfig(commonWebpackConfig, clientWebpackConfig)
     this.webpack.addCommonConfig(commonWebpackConfig)
 
-    this.webpack.addClientMiddleware(webpackConfig => clientConfiguration(webpackConfig, universalSettings))
+    this.webpack.addClientMiddleware(webpackConfig => clientConfiguration(webpackConfig, this.universalSettings))
   }
 
   setCache(cache) {
@@ -71,9 +76,11 @@ class RenderServerPlugin extends PluginInstance {
   }
 
   createRenderServer(webpackConfig) {
-    prepareConfig(settings, webpackConfig)
+    const universalSettings = this.universalSettings
 
-    const compiler = webpack(serverConfiguration(webpackConfig, settings))
+    prepareConfig(universalSettings, webpackConfig)
+
+    const compiler = webpack(serverConfiguration(webpackConfig, universalSettings))
     const serverConfig = Object.assign(webpackConfig, {
       cacheConfig: {
         components: this.cache,
@@ -81,7 +88,7 @@ class RenderServerPlugin extends PluginInstance {
     })
 
     let render
-    let asyncRender = startCompileRenderServer(serverConfig, settings)
+    let asyncRender = startCompileRenderServer(serverConfig, universalSettings)
 
     if (process.env.NODE_ENV === 'production') {
       compiler.run(logBuildResult)
@@ -92,11 +99,10 @@ class RenderServerPlugin extends PluginInstance {
         logBuildResult(err, stats)
 
         if (!err && !stats.compilation.errors.length) {
-          const buildPath = path.resolve(__dirname, '..', settings.server.output)
-          delete require.cache[buildPath]
+          delete require.cache[universalSettings.server.output]
 
           render = null
-          asyncRender = startCompileRenderServer(serverConfig, settings)
+          asyncRender = startCompileRenderServer(serverConfig, universalSettings)
         }
       })
     }
@@ -115,7 +121,7 @@ class RenderServerPlugin extends PluginInstance {
 
   render(app) {
     const config = Object.assign(this.webpack.getCommonConfig(), {
-      context: path.resolve(__dirname, '..'),
+      context: path.resolve(this.config.outputPath, '..'),
     })
 
     const doRender = this.createRenderServer(config)
