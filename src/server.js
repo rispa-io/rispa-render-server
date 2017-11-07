@@ -84,9 +84,8 @@ const createRender = (assets, cacheConfig) => (req, res, config) => {
         : ReactDOM.renderToString(App)
 
       const rootDir = path.resolve(process.cwd())
-      const paths = flushWebpackRequireWeakIds().map(
-        p => path.relative(rootDir, p).replace(/\\/g, '/'),
-      )
+      const paths = flushWebpackRequireWeakIds()
+
       const flushedAssets = flushChunks(paths, stats, {
         rootDir,
       })
