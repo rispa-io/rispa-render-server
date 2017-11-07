@@ -14,7 +14,7 @@ const resolveModule = (context, request) => {
 const isModuleExternal = module => (
   !/\\|\//.test(module) ||
   (/node_modules/.test(module) &&
-    !/react-loadable|webpack-flush-chunks|react-cookie/.test(module)
+    !/react-loadable|webpack-flush-chunks|react-cookie|@rispa/.test(module)
   )
 )
 
