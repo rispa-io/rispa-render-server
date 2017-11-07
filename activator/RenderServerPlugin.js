@@ -8,7 +8,7 @@ const WebpackPluginApi = require('@rispa/webpack')
 const BabelPluginApi = require('@rispa/babel').default
 const {
   server: startCompileRenderServer,
-  prepare: prepareConfig
+  prepare: prepareConfig,
 } = require('universal-webpack')
 const cookiesMiddleware = require('universal-cookie-express')
 const serverConfiguration = require('./middleware/server')

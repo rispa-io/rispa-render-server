@@ -38,8 +38,8 @@
     "@rispa/core" "4.1.x"
 
 "@rispa/core@4.1.x":
-  version "4.1.3"
-  resolved "https://registry.yarnpkg.com/@rispa/core/-/core-4.1.3.tgz#dbad8ac73a7366b9d488bbd84e9112bfaba2b922"
+  version "4.1.4"
+  resolved "https://registry.yarnpkg.com/@rispa/core/-/core-4.1.4.tgz#c31667fa66ce855522621f815ccd57c36f647b63"
   dependencies:
     debug "^2.6.6"
     dependency-graph "0.5.0"
@@ -101,8 +101,8 @@
     serve-favicon "^2.4.2"
 
 "@rispa/webpack@4.1.x":
-  version "4.1.3"
-  resolved "https://registry.yarnpkg.com/@rispa/webpack/-/webpack-4.1.3.tgz#f9b2a7e45c3e1de7b447fde4c4b8277f366c6ffe"
+  version "4.1.4"
+  resolved "https://registry.yarnpkg.com/@rispa/webpack/-/webpack-4.1.4.tgz#e3431d90f182c1797060db8812a200beebd24383"
   dependencies:
     "@rispa/config" "4.1.x"
     "@rispa/core" "4.1.x"
