@@ -1,6 +1,6 @@
 const WriteFilePlugin = require('write-file-webpack-plugin')
 const StatsPlugin = require('stats-webpack-plugin')
-const { group, env } = require('@webpack-blocks/webpack2')
+const { group, env, defineConstants } = require('@webpack-blocks/webpack2')
 
 module.exports = group([
   () => ({
@@ -15,6 +15,9 @@ module.exports = group([
         exclude: [/node_modules/],
       }),
     ],
+  }),
+  defineConstants({
+    'process.env.SSR': false,
   }),
   env('development', [
     () => ({
