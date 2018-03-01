@@ -131,6 +131,8 @@ class RenderServerPlugin extends PluginInstance {
     })
 
     app.get('*', (req, res) => {
+      log(`request page '${req.originalUrl}'`)
+
       doRender(this.side, req, res)
     })
   }

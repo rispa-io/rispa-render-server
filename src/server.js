@@ -4,6 +4,7 @@ import SSRCaching from 'electrode-react-ssr-caching'
 import React from 'react'
 import ReactDOM from 'react-dom/server'
 import createHistory from 'history/createMemoryHistory'
+import { parsePath } from 'history/PathUtils'
 import flushChunks from 'webpack-flush-chunks'
 import reactTreeWalker from 'react-tree-walker'
 import {
@@ -51,14 +52,20 @@ const createRender = (assets, cacheConfig) => (req, res, config) => {
     SSRCaching.setCachingConfig(cacheConfig)
   }
 
-  const location = req.originalUrl
+  const location = parsePath(req.url)
   const cookies = req.universalCookies
-  const history = createHistory()
-  const store = configureStore(history)
-  const when = createWhen(store, true)
+  const history = createHistory({
+    initialEntries: [location],
+    initialIndex: 0,
+  })
+  const initialState = {
+    router: {
+      location,
+    }
+  }
+  const store = configureStore({ history, data: initialState, ssr: true })
+  const when = createWhen({ store, ssr: true })
   const routes = getRoutes({ store, when, cookies })
-
-  store.dispatch(replace(location))
 
   const App = (
     <Provider store={store}>
@@ -74,7 +81,7 @@ const createRender = (assets, cacheConfig) => (req, res, config) => {
     .then(() => {
       const { router } = store.getState()
       const newLocation = `${router.location.pathname}${router.location.search}`
-      if (newLocation !== location) {
+      if (newLocation !== req.url) {
         res.redirect(302, newLocation)
         return
       }
