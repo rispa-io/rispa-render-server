@@ -12,7 +12,6 @@ import {
   Provider,
   configureStore,
   createWhen,
-  replace,
 } from '@rispa/redux'
 import getRoutes from '@rispa/routes'
 import { CookiesProvider } from 'react-cookie'
@@ -61,7 +60,7 @@ const createRender = (assets, cacheConfig) => (req, res, config) => {
   const initialState = {
     router: {
       location,
-    }
+    },
   }
   const store = configureStore({ history, data: initialState, ssr: true })
   const when = createWhen({ store, ssr: true })
