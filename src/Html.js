@@ -62,10 +62,13 @@ class Html extends PureComponent {
     const { assets, content, initialState } = this.props
 
     let bootstrapScript = null
+    let polyfillScript = null
     const chunks = []
     Object.values(assets.javascript).forEach(script => {
       if (/bootstrap/.test(script)) {
         bootstrapScript = script
+      } else if (/polyfill/.test(script)) {
+        polyfillScript = script
       } else {
         chunks.push(script)
       }
@@ -75,6 +78,7 @@ class Html extends PureComponent {
       <html lang='ru-RU'>
         <head>
           <link rel='shortcut icon' href='/favicon.ico' />
+          <meta httpEquiv='X-UA-Compatible' content='IE=edge' />
           <meta name='viewport' content='width=device-width, initial-scale=1' />
           {Object.keys(assets.styles).map(style => (
             <link
@@ -90,6 +94,7 @@ class Html extends PureComponent {
         <body>
           <div id='root' dangerouslySetInnerHTML={{ __html: content || '' }} />
           <script src={bootstrapScript} charSet='UTF-8' />
+          {polyfillScript && <script src={polyfillScript} charSet='UTF-8' />}
           <script
             dangerouslySetInnerHTML={{
               __html: `
