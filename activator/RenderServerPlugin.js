@@ -8,7 +8,7 @@ const WebpackPluginApi = require('@rispa/webpack')
 const BabelPluginApi = require('@rispa/babel').default
 const {
   server: startCompileRenderServer,
-  prepare: prepareConfig
+  prepare: prepareConfig,
 } = require('universal-webpack')
 const cookiesMiddleware = require('universal-cookie-express')
 const serverConfiguration = require('./middleware/server')
@@ -16,7 +16,8 @@ const clientConfiguration = require('./middleware/client')
 
 const babelConfig = require('./configs/babel-options')
 const clientWebpackConfig = require('./configs/client.wpc')
-const commonWebpackConfig = require('./configs/client.wpc')
+const commonWebpackConfig = require('./configs/common.wpc')
+const serverWebpackConfig = require('./configs/server.wpc')
 
 const log = createDebug('rispa:info:render-server')
 const logError = createDebug('rispa:error:render-server')
@@ -65,7 +66,7 @@ class RenderServerPlugin extends PluginInstance {
 
     this.babel.addConfig(babelConfig)
 
-    this.webpack.addClientConfig(commonWebpackConfig, clientWebpackConfig)
+    this.webpack.addClientConfig(clientWebpackConfig)
     this.webpack.addCommonConfig(commonWebpackConfig)
 
     this.webpack.addClientMiddleware(webpackConfig => clientConfiguration(webpackConfig, this.universalSettings))
@@ -120,7 +121,7 @@ class RenderServerPlugin extends PluginInstance {
   }
 
   render(app) {
-    const config = this.webpack.getCommonConfig()
+    const config = this.webpack.getCommonConfig(serverWebpackConfig)
 
     const doRender = this.createRenderServer(config)
 
