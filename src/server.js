@@ -94,6 +94,8 @@ const createRender = (assets, cacheConfig) => (req, res, config) => {
 
       const flushedAssets = flushChunks(paths, stats, {
         rootDir,
+        before: ['bootstrap', 'polyfill', 'vendor'],
+        after: ['main'],
       })
       assets.javascript = flushedAssets.scripts.reduce((newScripts, script) => {
         const key = script.replace(/\.js$/, '')
