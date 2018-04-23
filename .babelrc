@@ -1,5 +1,11 @@
 {
   "presets": [
-    "@rispa/babel/lib/babelConfig"
+    "@rispa/babel/base",
+    "react",
+    ["env", {
+      "targets": {
+        "node": "8.9.0"
+      }
+    }]
   ]
 }

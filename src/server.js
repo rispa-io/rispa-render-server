@@ -57,13 +57,9 @@ const createRender = (assets, cacheConfig) => (req, res, config) => {
     initialEntries: [location],
     initialIndex: 0,
   })
-  const initialState = {
-    router: {
-      location,
-    },
-  }
-  const store = configureStore({ history, data: initialState, ssr: true })
-  const when = createWhen({ store, ssr: true })
+  const initialState = {}
+  const store = configureStore({ history, data: initialState })
+  const when = createWhen({ store })
   const routes = getRoutes({ store, when, cookies })
 
   const App = (
