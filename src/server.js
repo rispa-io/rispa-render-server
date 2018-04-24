@@ -16,6 +16,7 @@ import {
 import getRoutes from '@rispa/routes'
 import { CookiesProvider } from 'react-cookie'
 import { flushWebpackRequireWeakIds } from 'react-loadable'
+import Response from '../response'
 import Html from './Html'
 
 let stats
@@ -113,7 +114,13 @@ const createRender = (assets, cacheConfig) => (req, res, config) => {
             />,
           )}`
 
-      res.send(html)
+      const statusCode = Response.peek() || 200
+
+      Response.rewind()
+
+      res
+        .status(statusCode)
+        .send(html)
     })
 }
 
