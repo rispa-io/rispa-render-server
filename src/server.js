@@ -16,6 +16,7 @@ import {
 import getRoutes from '@rispa/routes'
 import { CookiesProvider } from 'react-cookie'
 import { flushWebpackRequireWeakIds } from 'react-loadable'
+import serialize from 'serialize-javascript'
 import Response from '../response'
 import Html from './Html'
 
@@ -110,7 +111,7 @@ const createRender = (assets, cacheConfig) => (req, res, config) => {
             <Html
               assets={assets}
               content={content}
-              initialState={JSON.stringify(store.getState())}
+              initialState={serialize(store.getState(), { isJSON: true })}
             />,
           )}`
 
