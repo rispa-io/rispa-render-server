@@ -36,15 +36,26 @@
     "universal-webpack": "^0.3.9",
     "webpack": "^2.4.1",
     "webpack-flush-chunks": "^0.1.1",
-    "write-file-webpack-plugin": "^4.0.2"
+    "write-file-webpack-plugin": "^4.0.2",
+    "better-npm-run": "0.1.0"
   },
   "devDependencies": {
     "@rispa/eslint-config": ">=3.0.0",
     "babel-cli": "^6.26.0"
   },
   "scripts": {
+    "build": "better-npm-run build",
     "compile": "babel src --out-dir lib --ignore spec.js,test.js",
     "lint": "rispa-eslint .",
     "lint:fix": "rispa-eslint . --fix"
+  },
+  "betterScripts": {
+    "build": {
+      "command": "node ./bin/build.js",
+      "env": {
+        "NODE_ENV": "production",
+        "DEBUG": "rispa:*"
+      }
+    }
   }
 }
