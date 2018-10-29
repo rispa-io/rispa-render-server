@@ -76,6 +76,15 @@ class RenderServerPlugin extends PluginInstance {
     this.cache = cache
   }
 
+  runBuild() {
+    const config = this.webpack.getCommonConfig(serverWebpackConfig)
+    const { compiler, start } = this.createRenderServer(config)
+
+    start()
+
+    compiler.run(logBuildResult)
+  }
+
   createRenderServer(webpackConfig) {
     const universalSettings = this.universalSettings
 
@@ -88,25 +97,32 @@ class RenderServerPlugin extends PluginInstance {
       },
     })
 
-    let render
-    let asyncRender = startCompileRenderServer(serverConfig, universalSettings)
-
-    if (process.env.NODE_ENV === 'production') {
-      compiler.run(logBuildResult)
-    } else {
-      compiler.watch({
-        aggregateTimeout: 300,
-      }, (err, stats) => {
-        logBuildResult(err, stats)
-
-        if (!err && !stats.compilation.errors.length) {
-          delete require.cache[universalSettings.server.output]
-
-          render = null
-          asyncRender = startCompileRenderServer(serverConfig, universalSettings)
-        }
-      })
+    return {
+      compiler,
+      start: () => startCompileRenderServer(serverConfig, universalSettings),
+      universalSettings,
     }
+  }
+
+  createDevRenderServer() {
+    const config = this.webpack.getCommonConfig(serverWebpackConfig)
+    const { compiler, start, universalSettings } = this.createRenderServer(config)
+
+    let render
+    let asyncRender = start()
+
+    compiler.watch({
+      aggregateTimeout: 300,
+    }, (err, stats) => {
+      logBuildResult(err, stats)
+
+      if (!err && !stats.compilation.errors.length) {
+        delete require.cache[universalSettings.server.output]
+
+        render = null
+        asyncRender = start()
+      }
+    })
 
     return (side, req, res) => {
       if (render) {
@@ -120,10 +136,39 @@ class RenderServerPlugin extends PluginInstance {
     }
   }
 
-  render(app) {
-    const config = this.webpack.getCommonConfig(serverWebpackConfig)
+  createProdRenderServer() {
+    try {
+      const configuration = Object.assign(this.webpack.getCommonConfig(serverWebpackConfig), {
+        cacheConfig: {
+          components: this.cache,
+        },
+      })
 
-    const doRender = this.createRenderServer(config)
+      // eslint-disable-next-line import/no-dynamic-require,global-require
+      const { default: starter } = require(this.universalSettings.server.output)
+
+      const chunksPath = path.resolve(configuration.output.path, 'webpack-chunks.json')
+      // eslint-disable-next-line import/no-dynamic-require,global-require
+      const chunks = require(chunksPath)
+
+      const doRender = starter({
+        configuration,
+        chunks: () => chunks,
+      })
+
+      return (side, req, res) => doRender[side](req, res, this.config)
+    } catch (error) {
+      logError(error)
+      logError('Failed to run prod server.')
+
+      throw error
+    }
+  }
+
+  render(app) {
+    const doRender = process.env.NODE_ENV === 'production'
+      ? this.createProdRenderServer()
+      : this.createDevRenderServer()
 
     app.use(cookiesMiddleware())
 
