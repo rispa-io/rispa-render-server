@@ -6,11 +6,20 @@ const { PluginInstance } = require('@rispa/core')
 const ServerPluginApi = require('@rispa/server')
 const WebpackPluginApi = require('@rispa/webpack')
 const BabelPluginApi = require('@rispa/babel').default
-const {
-  server: startCompileRenderServer,
-  prepare: prepareConfig,
-} = require('universal-webpack')
-const cookiesMiddleware = require('universal-cookie-express')
+// const {
+//   server: startCompileRenderServer,
+//   prepare: prepareConfig,
+// } = require('universal-webpack')
+const startCompileRenderServer = () => {
+  throw new Error('Need fix')
+}
+const prepareConfig = () => {
+  throw new Error('Need fix')
+}
+// const cookiesMiddleware = require('universal-cookie-express')
+const cookiesMiddleware = () => {
+  throw new Error('Need fix')
+}
 const serverConfiguration = require('./middleware/server')
 const clientConfiguration = require('./middleware/client')
 
@@ -21,9 +30,6 @@ const serverWebpackConfig = require('./configs/server.wpc')
 
 const log = createDebug('rispa:info:render-server')
 const logError = createDebug('rispa:error:render-server')
-
-const CLIENT_SIDE = 'client'
-const SERVER_SIDE = 'server'
 
 const logBuildResult = (err, stats) => {
   if (err) {
@@ -49,7 +55,6 @@ class RenderServerPlugin extends PluginInstance {
     this.babel = context.get(BabelPluginApi.pluginName)
 
     this.cache = {}
-    this.side = process.env.DISABLE_SSR ? CLIENT_SIDE : SERVER_SIDE
 
     this.universalSettings = {
       server: {
@@ -85,7 +90,7 @@ class RenderServerPlugin extends PluginInstance {
     compiler.run(logBuildResult)
   }
 
-  createRenderServer(webpackConfig) {
+  createServerCompiler(webpackConfig) {
     const universalSettings = this.universalSettings
 
     prepareConfig(universalSettings, webpackConfig)
@@ -104,9 +109,9 @@ class RenderServerPlugin extends PluginInstance {
     }
   }
 
-  createDevRenderServer() {
+  createServerSideDevRender() {
     const config = this.webpack.getCommonConfig(serverWebpackConfig)
-    const { compiler, start, universalSettings } = this.createRenderServer(config)
+    const { compiler, start, universalSettings } = this.createServerCompiler(config)
 
     let render
     let asyncRender = start()
@@ -124,19 +129,19 @@ class RenderServerPlugin extends PluginInstance {
       }
     })
 
-    return (side, req, res) => {
+    return (req, res) => {
       if (render) {
-        render[side](req, res, this.config)
+        render(req, res, this.config)
       } else {
         asyncRender.then(newRender => {
           render = newRender
-          render[side](req, res, this.config)
+          render(req, res, this.config)
         })
       }
     }
   }
 
-  createProdRenderServer() {
+  createServerSideProdRender() {
     try {
       const configuration = Object.assign(this.webpack.getCommonConfig(serverWebpackConfig), {
         cacheConfig: {
@@ -156,7 +161,7 @@ class RenderServerPlugin extends PluginInstance {
         chunks: () => chunks,
       })
 
-      return (side, req, res) => doRender[side](req, res, this.config)
+      return (req, res) => doRender(req, res, this.config)
     } catch (error) {
       logError(error)
       logError('Failed to run prod server.')
@@ -165,21 +170,30 @@ class RenderServerPlugin extends PluginInstance {
     }
   }
 
-  render(app) {
+  createRender() {
+    if (process.env.DISABLE_SSR) {
+      return (req, res) => {
+        console.log(res.locals)
+        return 'TOOD'
+      }
+    }
+
     const doRender = process.env.NODE_ENV === 'production'
-      ? this.createProdRenderServer()
-      : this.createDevRenderServer()
+      ? this.createServerSideProdRender()
+      : this.createServerSideDevRender()
 
-    app.use(cookiesMiddleware())
+    return doRender
+  }
 
-    app.get('/shell', (req, res) => {
-      doRender(CLIENT_SIDE, req, res)
-    })
+  render(app) {
+    const doRender = this.createRender()
+
+    // app.use(cookiesMiddleware()) TODO: Need fix
 
     app.get('*', (req, res) => {
       log(`request page '${req.originalUrl}'`)
 
-      doRender(this.side, req, res)
+      return doRender(req, res)
     })
   }
 }

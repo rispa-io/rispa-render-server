@@ -1,10 +1,9 @@
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
-const { clientConfiguration } = require('universal-webpack')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 const IS_PROD = process.env.NODE_ENV === 'production'
 
 const addExtractPlugin = config => {
-  const extractPlugin = new ExtractTextPlugin({
+  const extractPlugin = new MiniCssExtractPlugin({
     filename: '[name]-[contenthash].css',
     allChunks: true,
   })
@@ -35,17 +34,12 @@ const addExtractPlugin = config => {
     const afterStyleLoader = loaders.slice(styleLoaderIndex + 1)
     const styleLoader = loaders[styleLoaderIndex]
 
-    const extractLoaders = ExtractTextPlugin.extract({
-      remove: IS_PROD,
-      use: afterStyleLoader,
-    })
-
     const newRule = Object.assign({}, rule)
     delete newRule.loaders
     newRule.use = [
       ...beforeStyleLoader,
-      ...(IS_PROD ? [] : [styleLoader]),
-      ...extractLoaders,
+      ...(IS_PROD ? [MiniCssExtractPlugin.loader] : [styleLoader]),
+      ...afterStyleLoader,
     ]
 
     return newRule
@@ -62,4 +56,4 @@ const addExtractPlugin = config => {
   })
 }
 
-module.exports = (config, settings) => clientConfiguration(addExtractPlugin(config), settings)
+module.exports = (config, settings) => addExtractPlugin(config, settings)

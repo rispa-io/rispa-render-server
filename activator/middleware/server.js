@@ -1,5 +1,8 @@
 const relative = require('require-relative')
-const { serverConfiguration } = require('universal-webpack')
+// const { serverConfiguration } = require('universal-webpack')
+const serverConfiguration = () => {
+  throw new Error('Need fix')
+}
 
 const resolveModule = (context, request) => {
   let requestResolved

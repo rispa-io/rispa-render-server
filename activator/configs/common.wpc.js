@@ -1,4 +1,4 @@
-module.exports = () => ({
+module.exports = (context, { merge }) => merge({
   entry: {
     vendor: [
       require.resolve('react-cookie'),

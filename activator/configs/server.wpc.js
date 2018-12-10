@@ -1,4 +1,4 @@
-const { group, defineConstants } = require('@webpack-blocks/webpack2')
+const { group, defineConstants } = require('@webpack-blocks/webpack')
 
 module.exports = group([
   defineConstants({
