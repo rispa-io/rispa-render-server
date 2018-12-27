@@ -6,7 +6,6 @@
   "main": "./activator/RenderServerPluginApi.js",
   "rispa:activator": "./activator/index.js",
   "dependencies": {
-    "@rispa/babel": "4.2.x",
     "@rispa/config": "4.2.x",
     "@rispa/core": "4.2.x",
     "@rispa/redux": "4.2.x",
@@ -32,16 +31,25 @@
     "react-tree-walker": "^2.1.1",
     "require-relative": "^0.8.7",
     "serialize-javascript": "^1.5.0",
-    "stats-webpack-plugin": "^0.7.0",
     "universal-cookie-express": "^2.0.5",
     "universal-webpack": "^0.3.9",
-    "webpack": "^4.27.1",
-    "webpack-flush-chunks": "^0.1.1",
-    "write-file-webpack-plugin": "^4.0.2"
+    "webpack-flush-chunks": "^0.1.1"
   },
   "devDependencies": {
     "@rispa/eslint-config": ">=3.0.0",
-    "babel-cli": "^6.26.0"
+    "@babel/cli": "^7.2.0",
+    "@babel/core": "^7.2.2"
+  },
+  "babel": {
+    "presets": [
+      ["@rispa/babel/preset-app", {
+        "env": {
+          "targets": {
+            "chrome": 56
+          }
+        }
+      }]
+    ]
   },
   "scripts": {
     "build": "better-npm-run build",

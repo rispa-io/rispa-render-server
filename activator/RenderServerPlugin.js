@@ -1,31 +1,10 @@
 const path = require('path')
-const webpack = require('webpack')
 const createDebug = require('debug')
 const ConfigPluginApi = require('@rispa/config').default
 const { PluginInstance } = require('@rispa/core')
 const ServerPluginApi = require('@rispa/server')
 const WebpackPluginApi = require('@rispa/webpack')
-const BabelPluginApi = require('@rispa/babel').default
-// const {
-//   server: startCompileRenderServer,
-//   prepare: prepareConfig,
-// } = require('universal-webpack')
-const startCompileRenderServer = () => {
-  throw new Error('Need fix')
-}
-const prepareConfig = () => {
-  throw new Error('Need fix')
-}
-// const cookiesMiddleware = require('universal-cookie-express')
-const cookiesMiddleware = () => {
-  throw new Error('Need fix')
-}
-const serverConfiguration = require('./middleware/server')
-const clientConfiguration = require('./middleware/client')
 
-const babelConfig = require('./configs/babel-options')
-const clientWebpackConfig = require('./configs/client.wpc')
-const commonWebpackConfig = require('./configs/common.wpc')
 const serverWebpackConfig = require('./configs/server.wpc')
 
 const log = createDebug('rispa:info:render-server')
@@ -52,7 +31,6 @@ class RenderServerPlugin extends PluginInstance {
     this.config = context.get(ConfigPluginApi.pluginName).getConfig()
     this.server = context.get(ServerPluginApi.pluginName)
     this.webpack = context.get(WebpackPluginApi.pluginName)
-    this.babel = context.get(BabelPluginApi.pluginName)
 
     this.cache = {}
 
@@ -67,14 +45,9 @@ class RenderServerPlugin extends PluginInstance {
   }
 
   start() {
-    this.server.setRenderMethod(this.render)
+    this.server.setServerRender(this.render)
 
-    this.babel.addConfig(babelConfig)
-
-    this.webpack.addClientConfig(clientWebpackConfig)
-    this.webpack.addCommonConfig(commonWebpackConfig)
-
-    this.webpack.addClientMiddleware(webpackConfig => clientConfiguration(webpackConfig, this.universalSettings))
+    this.webpack.addServerConfig(serverWebpackConfig)
   }
 
   setCache(cache) {
@@ -82,31 +55,8 @@ class RenderServerPlugin extends PluginInstance {
   }
 
   runBuild() {
-    const config = this.webpack.getCommonConfig(serverWebpackConfig)
-    const { compiler, start } = this.createRenderServer(config)
-
-    start()
-
+    const compiler = this.webpack.getServerCompiler()
     compiler.run(logBuildResult)
-  }
-
-  createServerCompiler(webpackConfig) {
-    const universalSettings = this.universalSettings
-
-    prepareConfig(universalSettings, webpackConfig)
-
-    const compiler = webpack(serverConfiguration(webpackConfig, universalSettings))
-    const serverConfig = Object.assign(webpackConfig, {
-      cacheConfig: {
-        components: this.cache,
-      },
-    })
-
-    return {
-      compiler,
-      start: () => startCompileRenderServer(serverConfig, universalSettings),
-      universalSettings,
-    }
   }
 
   createServerSideDevRender() {
