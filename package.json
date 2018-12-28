@@ -12,26 +12,30 @@
     "@rispa/server": "4.2.x",
     "@rispa/webpack": "4.2.x",
     "@webpack-blocks/webpack": "^2.0.0-alpha",
-    "debug": "^2.6.6",
-    "electrode-react-ssr-caching": "^0.1.5",
-    "history": "^4.6.1",
+    "electrode-react-ssr-caching": "^0.1.6",
+    "history": "^4.9.0-beta.2",
     "prop-types": "^15.5.8",
-    "react": "^15.5.4",
-    "react-cookie": "^2.0.7",
-    "react-dom": "^15.5.4",
-    "react-loadable": "^3.3.1",
-    "react-redux": "^5.0.6",
-    "react-router": "^4.1.1",
+    "react": "^16.7.0",
+    "react-cookie": "^3.0.8",
+    "react-dom": "^16.7.0",
+    "react-loadable": "^5.5.0",
+    "react-redux": "^6.0.0",
+    "react-router": "^4.3.1",
     "react-side-effect": "^1.1.5",
-    "react-tree-walker": "^2.1.1",
+    "react-tree-walker": "^4.3.0",
     "require-relative": "^0.8.7",
-    "serialize-javascript": "^1.5.0",
-    "webpack-flush-chunks": "^0.1.1"
+    "serialize-javascript": "^1.6.1",
+    "webpack-flush-chunks": "^2.0.3"
   },
   "devDependencies": {
     "@rispa/eslint-config": ">=3.0.0",
     "@babel/cli": "^7.2.0",
     "@babel/core": "^7.2.2"
+  },
+  "scripts": {
+    "compile": "babel src --out-dir lib --ignore spec.js,test.js",
+    "lint": "rispa-eslint .",
+    "lint:fix": "rispa-eslint . --fix"
   },
   "babel": {
     "presets": [
@@ -43,10 +47,5 @@
         }
       }]
     ]
-  },
-  "scripts": {
-    "compile": "babel src --out-dir lib --ignore spec.js,test.js",
-    "lint": "rispa-eslint .",
-    "lint:fix": "rispa-eslint . --fix"
   }
 }
