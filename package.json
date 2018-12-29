@@ -11,6 +11,8 @@
     "@rispa/routes": "4.2.x",
     "@rispa/server": "4.2.x",
     "@rispa/webpack": "4.2.x",
+    "@rispa/config": "4.2.x",
+    "@rispa/babel": "4.2.x",
     "@webpack-blocks/webpack": "^2.0.0-alpha",
     "debug": "^2.6.6",
     "electrode-react-ssr-caching": "^0.1.5",

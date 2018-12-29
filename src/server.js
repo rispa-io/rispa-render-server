@@ -1,6 +1,5 @@
 import fs from 'fs'
 import path from 'path'
-import SSRCaching from 'electrode-react-ssr-caching'
 import React from 'react'
 import ReactDOM from 'react-dom/server'
 import createHistory from 'history/createMemoryHistory'
@@ -22,35 +21,21 @@ import Html from './Html'
 
 let stats
 
-const renderAndProfile = (App, ssrProfilePath) => {
+const renderAndProfile = App => {
   for (let i = 0; i < 10; i += 1) {
     ReactDOM.renderToString(App)
   }
-
-  SSRCaching.clearProfileData()
-  SSRCaching.enableProfiling()
   const content = ReactDOM.renderToString(App)
-  SSRCaching.enableProfiling(false)
-
-  fs.writeFileSync(
-    ssrProfilePath,
-    JSON.stringify(SSRCaching.profileData, null, 2),
-  )
 
   return content
 }
 
-const createRender = (assets, cacheConfig) => (req, res, config) => {
+const createRender = assets => (req, res, config) => {
   const statsPath = path.resolve(config.outputPath, './stats.json')
   const ssrProfilePath = path.resolve(config.outputPath, './ssr-profile.json')
 
   if (!stats) {
     stats = JSON.parse(String(fs.readFileSync(statsPath)))
-  }
-
-  if (process.env.NODE_ENV === 'production') {
-    SSRCaching.enableCaching()
-    SSRCaching.setCachingConfig(cacheConfig)
   }
 
   const location = parsePath(req.url)
