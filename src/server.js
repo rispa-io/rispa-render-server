@@ -1,11 +1,6 @@
-import fs from 'fs'
-import path from 'path'
-import SSRCaching from 'electrode-react-ssr-caching'
 import React from 'react'
-import ReactDOM from 'react-dom/server'
-import createHistory from 'history/createMemoryHistory'
-import { parsePath } from 'history/PathUtils'
-import flushChunks from 'webpack-flush-chunks'
+import { renderToString } from 'react-dom/server'
+import { createMemoryHistory as createHistory, parsePath } from 'history'
 import reactTreeWalker from 'react-tree-walker'
 import {
   ConnectedRouter,
@@ -14,47 +9,16 @@ import {
   createWhen,
 } from '@rispa/redux'
 import getRoutes from '@rispa/routes'
+import ServerPluginApi from '@rispa/server'
 import { CookiesProvider } from 'react-cookie'
-import { flushWebpackRequireWeakIds } from 'react-loadable'
-import serialize from 'serialize-javascript'
+import Loadable from 'react-loadable'
+
 import Response from '../response'
-import Html from './Html'
 
-let stats
+const { Redirect } = ServerPluginApi.errors
 
-const renderAndProfile = (App, ssrProfilePath) => {
-  for (let i = 0; i < 10; i += 1) {
-    ReactDOM.renderToString(App)
-  }
-
-  SSRCaching.clearProfileData()
-  SSRCaching.enableProfiling()
-  const content = ReactDOM.renderToString(App)
-  SSRCaching.enableProfiling(false)
-
-  fs.writeFileSync(
-    ssrProfilePath,
-    JSON.stringify(SSRCaching.profileData, null, 2),
-  )
-
-  return content
-}
-
-const createRender = (assets, cacheConfig) => (req, res, config) => {
-  const statsPath = path.resolve(config.outputPath, './stats.json')
-  const ssrProfilePath = path.resolve(config.outputPath, './ssr-profile.json')
-
-  if (!stats) {
-    stats = JSON.parse(String(fs.readFileSync(statsPath)))
-  }
-
-  if (process.env.NODE_ENV === 'production') {
-    SSRCaching.enableCaching()
-    SSRCaching.setCachingConfig(cacheConfig)
-  }
-
-  const location = parsePath(req.url)
-  const cookies = req.universalCookies
+export default function render({ originalUrl: url, universalCookies: cookies }) {
+  const location = parsePath(url)
   const history = createHistory({
     initialEntries: [location],
     initialIndex: 0,
@@ -68,61 +32,40 @@ const createRender = (assets, cacheConfig) => (req, res, config) => {
   const when = createWhen({ store, ssr: true })
   const routes = getRoutes({ store, when, cookies })
 
+  const modules = []
+  const handleReportModule = moduleName => modules.push(moduleName)
+
   const App = (
-    <Provider store={store}>
-      <CookiesProvider cookies={cookies}>
-        <ConnectedRouter history={history}>
-          {routes}
-        </ConnectedRouter>
-      </CookiesProvider>
-    </Provider>
+    <Loadable.Capture report={handleReportModule}>
+      <Provider store={store}>
+        <CookiesProvider cookies={cookies}>
+          <ConnectedRouter history={history}>
+            {routes}
+          </ConnectedRouter>
+        </CookiesProvider>
+      </Provider>
+    </Loadable.Capture>
   )
 
-  reactTreeWalker(App, when.loadOnServer)
+  return reactTreeWalker(App, when.loadOnServer)
     .then(() => {
-      const { router } = store.getState()
-      const newLocation = `${router.location.pathname}${router.location.search}`
-      if (newLocation !== req.url) {
-        res.redirect(302, newLocation)
-        return
+      const state = store.getState()
+      const newLocation = `${state.router.location.pathname}${state.router.location.search}`
+      if (newLocation !== url) {
+        throw new Redirect(newLocation)
       }
 
-      const content = process.env.PROFILE_SSR
-        ? renderAndProfile(App, ssrProfilePath)
-        : ReactDOM.renderToString(App)
+      console.log(modules)
 
-      const rootDir = path.resolve(process.cwd())
-      const paths = flushWebpackRequireWeakIds()
-
-      const flushedAssets = flushChunks(paths, stats, {
-        rootDir,
-        before: ['bootstrap', 'polyfill', 'vendor'],
-        after: ['main'],
-      })
-      assets.javascript = flushedAssets.scripts.reduce((newScripts, script) => {
-        const key = script.replace(/\.js$/, '')
-        newScripts[key] = `${config.publicPath.replace(/\/$/, '')}/${script}`
-        return newScripts
-      }, {})
-
-      const html =
-        `<!doctype html>\n${
-          ReactDOM.renderToStaticMarkup(
-            <Html
-              assets={assets}
-              content={content}
-              initialState={serialize(store.getState(), { isJSON: true })}
-            />,
-          )}`
-
+      const content = renderToString(App)
       const statusCode = Response.peek() || 200
 
       Response.rewind()
 
-      res
-        .status(statusCode)
-        .send(html)
+      return {
+        content,
+        state,
+        statusCode,
+      }
     })
 }
-
-export default createRender
